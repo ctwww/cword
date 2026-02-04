@@ -1,0 +1,40 @@
+# CWord Configuration
+
+# Application settings
+app:
+  name: "CWord"
+  version: "1.0.0"
+  log_level: "INFO"
+
+# Directory paths
+directories:
+  sessions: "~/.cword/sessions"
+  logs: "~/.cword/logs"
+  output: "~/.cword/output"
+  templates: "~/.cword/templates"
+
+# Default LLM settings
+default_model:
+  provider: "anthropic"
+  api_key_env: "ANTHROPIC_API_KEY"
+  base_url: "https://api.anthropic.com"
+  model: "claude-sonnet-4-5-20250929"
+  temperature: 0.7
+  max_tokens: 2000
+  timeout: 30
+
+# Conversation settings
+conversation:
+  max_history: 50
+  summary_interval: 10
+  auto_save_interval: 300
+
+# Document settings
+documents:
+  format: "markdown"
+  include_decision_history: true
+  include_conversation_summary: true
+  auto_export: false
+
+# Agent configuration file path
+agents_config: "config/agents.yaml"

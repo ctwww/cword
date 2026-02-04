@@ -1,0 +1,27 @@
+# CWord Dependencies
+
+# LLM SDKs
+anthropic>=0.18.0
+openai>=1.0.0
+
+# CLI Framework
+rich>=13.7.0
+questionary>=2.0.0
+
+# Configuration
+pyyaml>=6.0
+
+# Template Engine
+jinja2>=3.1.0
+
+# Logging
+loguru>=0.7.0
+
+# Utilities
+python-dotenv>=1.0.0
+aiofiles>=23.0.0
+pydantic>=2.0.0
+
+# Optional: For Web UI (V2)
+# fastapi>=0.100.0
+# uvicorn>=0.23.0

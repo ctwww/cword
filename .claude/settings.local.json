@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(while:*)",
+      "Bash(do if [ \"$dir\" != \"/Users/chentiewen/Documents/selfProject/cword/src\" ])",
+      "Bash(then if [ ! -f \"$dir/__init__.py\" ])",
+      "Bash(then echo \"Missing: $dir/__init__.py\")",
+      "Bash(fi:*)",
+      "Bash(done:*)",
+      "Bash(make:*)",
+      "Bash(ls:*)"
+    ]
+  }
+}
