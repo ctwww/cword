@@ -66,8 +66,8 @@ class CLIInterface:
             elif user_input.lower() in ['/export', 'e']:
                 self._export_documents()
             else:
-                # Process user message
-                asyncio.run(self._process_message(user_input))
+                # Process user message (synchronous wrapper)
+                self._process_message_sync(user_input)
 
     def _show_welcome(self):
         """Show welcome screen"""
@@ -128,9 +128,9 @@ Current Team: Product Manager, Tech Lead, Business Consultant, Security Expert
             multiline=False
         ).ask()
 
-    async def _process_message(self, message: str):
-        """Process user message"""
-        # Create or get session
+    def _process_message_sync(self, message: str):
+        """Synchronous wrapper for processing user message"""
+        # Create or get session first
         session = self.session_manager.get_current_session()
 
         # Add user message to session
@@ -138,7 +138,7 @@ Current Team: Product Manager, Tech Lead, Business Consultant, Security Expert
         user_msg = Message(role="user", content=message)
         session.add_message(user_msg)
 
-        # Suggest agents
+        # Suggest agents (before async operations)
         suggestions = self.coordinator.suggest_agents(session)
 
         if suggestions:
@@ -147,21 +147,25 @@ Current Team: Product Manager, Tech Lead, Business Consultant, Security Expert
             else:
                 self.console.print(f"\n⚠️  Suggestion: {', '.join(suggestions)} may want to speak\n")
 
-        # Let user choose which agent should speak
+        # Let user choose which agent should speak (synchronous, before async)
         agent_name = self._select_agent()
 
         if agent_name and agent_name != "skip":
-            if agent_name == "all":
-                # Let all agents speak
-                for agent in self.agents:
-                    response = await self.coordinator.let_agent_speak(agent.name, session)
-                    self._display_agent_response(agent.name, response)
-            else:
-                # Get agent response
-                response = await self.coordinator.let_agent_speak(agent_name, session)
+            # Now run async operations in a new event loop
+            asyncio.run(self._get_agent_response(agent_name, session))
 
-                # Display response
-                self._display_agent_response(agent_name, response)
+    async def _get_agent_response(self, agent_name: str, session):
+        """Get agent response asynchronously"""
+        if agent_name == "all":
+            # Let all agents speak
+            for agent in self.agents:
+                response = await self.coordinator.let_agent_speak(agent.name, session)
+                self._display_agent_response(agent.name, response)
+        else:
+            # Get agent response
+            response = await self.coordinator.let_agent_speak(agent_name, session)
+            # Display response
+            self._display_agent_response(agent_name, response)
 
     def _select_agent(self) -> str:
         """Let user select which agent should speak"""
