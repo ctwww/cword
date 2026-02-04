@@ -133,18 +133,44 @@ def create_llm_provider(config: dict) -> LLMProvider:
     provider = config.get("provider", "anthropic").lower()
     model = config.get("model", "claude-sonnet-4-5-20250929")
 
-    # Try to get API key from config, then environment
-    api_key = config.get("api_key") or os.getenv(
-        "ANTHROPIC_API_KEY" if provider == "anthropic" else "OPENAI_API_KEY"
-    )
+    # Try to get API key from multiple sources
+    # 1. Direct api_key in config
+    # 2. api_key_env environment variable name
+    # 3. Default environment variable for the provider
+    api_key = config.get("api_key")
 
     if not api_key:
-        raise ValueError(f"API key not found for {provider}")
+        # Try to get from api_key_env
+        api_key_env = config.get("api_key_env")
+        if api_key_env:
+            api_key = os.getenv(api_key_env)
+
+    if not api_key:
+        # Fall back to default env var names
+        if provider == "anthropic":
+            api_key = os.getenv("ANTHROPIC_API_KEY")
+        elif provider == "openai":
+            api_key = os.getenv("OPENAI_API_KEY")
+
+    if not api_key:
+        # Build helpful error message
+        api_key_env = config.get("api_key_env")
+        if api_key_env:
+            raise ValueError(f"API key not found for {provider}. Please set environment variable: {api_key_env}")
+        else:
+            raise ValueError(f"API key not found for {provider}. Please set the appropriate API key environment variable.")
+
+    # Remove keys that are passed as explicit arguments
+    kwargs = config.copy()
+    kwargs.pop("provider", None)
+    kwargs.pop("model", None)
+    kwargs.pop("api_key", None)
+    kwargs.pop("api_key_env", None)
 
     # Create provider instance
     if provider == "anthropic":
-        return AnthropicProvider(model, api_key, **config)
+        return AnthropicProvider(model, api_key, **kwargs)
     elif provider == "openai":
-        return OpenAIProvider(model, api_key, **config)
+        return OpenAIProvider(model, api_key, **kwargs)
     else:
         raise ValueError(f"Unsupported provider: {provider}")

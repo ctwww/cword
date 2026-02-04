@@ -53,10 +53,17 @@ class AgentFactory:
                 config_data = yaml.safe_load(f)
                 agents_config = config_data.get("agents", [])
 
-                # Apply default language if not specified
+                # Get default model config
+                default_model = config_data.get("default_model", {})
+
+                # Apply default language and model if not specified
                 for agent_config in agents_config:
                     if "language" not in agent_config:
                         agent_config["language"] = self.default_language
+
+                    # Merge default model config if agent model is empty
+                    if not agent_config.get("model"):
+                        agent_config["model"] = default_model.copy()
 
                 return agents_config
 
@@ -67,6 +74,15 @@ class AgentFactory:
         """Get default agent configurations"""
         lang = self.default_language
 
+        # Get default model from main config
+        default_model = self.config.get("default_model", {
+            "provider": "anthropic",
+            "api_key_env": "ANTHROPIC_API_KEY",
+            "model": "claude-sonnet-4-5-20250929",
+            "temperature": 0.7,
+            "max_tokens": 2000
+        })
+
         return [
             {
                 "name": "产品经理" if lang == "zh" else "Product Manager",
@@ -75,7 +91,7 @@ class AgentFactory:
                 "description": "Experienced product manager, skilled in requirement mining" if lang == "en" else "经验丰富的产品经理，擅长需求挖掘",
                 "system_prompt": "Auto-generated from built-in prompts",
                 "language": lang,
-                "model": {}
+                "model": default_model.copy()
             },
             {
                 "name": "技术专家" if lang == "zh" else "Tech Lead",
@@ -84,7 +100,7 @@ class AgentFactory:
                 "description": "Senior technical expert, skilled in architecture design" if lang == "en" else "资深技术专家，擅长架构设计",
                 "system_prompt": "Auto-generated from built-in prompts",
                 "language": lang,
-                "model": {}
+                "model": default_model.copy()
             },
             {
                 "name": "业务顾问" if lang == "zh" else "Business Consultant",
@@ -93,7 +109,7 @@ class AgentFactory:
                 "description": "Business value analyst, skilled in market analysis" if lang == "en" else "商业价值分析师，擅长市场分析",
                 "system_prompt": "Auto-generated from built-in prompts",
                 "language": lang,
-                "model": {}
+                "model": default_model.copy()
             },
             {
                 "name": "安全专家" if lang == "zh" else "Security Expert",
@@ -102,7 +118,7 @@ class AgentFactory:
                 "description": "Security expert, skilled in identifying risks" if lang == "en" else "安全专家，擅长识别风险",
                 "system_prompt": "Auto-generated from built-in prompts",
                 "language": lang,
-                "model": {}
+                "model": default_model.copy()
             }
         ]
 

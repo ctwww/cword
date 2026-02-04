@@ -9,6 +9,10 @@ from pathlib import Path
 src_dir = Path(__file__).parent
 sys.path.insert(0, str(src_dir))
 
+# Load environment variables from .env file
+from dotenv import load_dotenv
+load_dotenv()
+
 import asyncio
 from rich.console import Console
 
