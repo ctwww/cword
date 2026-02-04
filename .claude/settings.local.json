@@ -9,7 +9,11 @@
       "Bash(fi:*)",
       "Bash(done:*)",
       "Bash(make:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(python:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ]
   }
 }

@@ -4,9 +4,10 @@ Session Store - Persist and retrieve sessions
 
 import json
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
 
-from core.session import Session
+if TYPE_CHECKING:
+    from core.session import Session
 
 
 class SessionStore:
@@ -23,15 +24,17 @@ class SessionStore:
         path.mkdir(parents=True, exist_ok=True)
         return path
 
-    def save_session(self, session: Session):
+    def save_session(self, session):
         """Save session to file"""
         session_file = self.sessions_dir / f"{session.session_id}.json"
 
         with open(session_file, 'w', encoding='utf-8') as f:
             json.dump(session.to_dict(), f, indent=2, ensure_ascii=False)
 
-    def load_session(self, session_id: str) -> Optional[Session]:
+    def load_session(self, session_id: str):
         """Load session from file"""
+        from core.session import Session
+
         session_file = self.sessions_dir / f"{session_id}.json"
 
         if not session_file.exists():
@@ -48,8 +51,10 @@ class SessionStore:
         if session_file.exists():
             session_file.unlink()
 
-    def list_sessions(self) -> List[Session]:
+    def list_sessions(self):
         """List all sessions"""
+        from core.session import Session
+
         sessions = []
 
         for session_file in self.sessions_dir.glob("*.json"):

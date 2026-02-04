@@ -2,8 +2,14 @@
 CWord Main Entry Point
 """
 
-import asyncio
+import sys
 from pathlib import Path
+
+# Add src directory to Python path
+src_dir = Path(__file__).parent
+sys.path.insert(0, str(src_dir))
+
+import asyncio
 from rich.console import Console
 
 from cli.interface import CLIInterface
